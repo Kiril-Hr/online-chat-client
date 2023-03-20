@@ -3,6 +3,7 @@ import io from 'socket.io-client'
 import { useLocation, useNavigate } from 'react-router-dom'
 import emojis from '../images/emojis.svg'
 import EmojiPicker from 'emoji-picker-react'
+import dotenv from "dotenv";
 
 import styles from '../styles/Chat.module.css'
 import Messages from "./Messages"
