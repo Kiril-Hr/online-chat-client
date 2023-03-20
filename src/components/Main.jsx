@@ -32,7 +32,7 @@ const Main = () => {
 
         <form className={styles.form}>
             <div className={styles.group}>
-              <input 
+              <input
                 type="text" 
                 name="name" 
                 value={values[NAME]}

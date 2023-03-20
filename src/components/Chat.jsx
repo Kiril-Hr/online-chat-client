@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import io from 'socket.io-client'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import emojis from '../images/emojis.svg'
 import EmojiPicker from 'emoji-picker-react'
 
@@ -10,6 +10,7 @@ import Messages from "./Messages"
 const socket = io.connect("http://localhost:5000")
 
 const Chat = () => {
+  const navigate = useNavigate()
 
   const { search } = useLocation();
   const [params, setParams] = useState({
@@ -19,6 +20,7 @@ const Chat = () => {
   const [state, setState] = useState([])
   const [message, setMessage] = useState('')
   const [isOpen, setOpen] = useState(false)
+  const [users, setUsers] = useState(0)
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search))
@@ -32,8 +34,15 @@ const Chat = () => {
     })
   }, [])
 
-  const leftRoom = () => {
+  useEffect(() => {
+    socket.on('room', ({data: { users }}) => {
+      setUsers(users.length)
+    })
+  }, [])
 
+  const leftRoom = () => {
+    socket.emit('leftRoom', { params })
+    navigate('/')
   }
 
   const handleChange = ({target: { value }}) => setMessage(value)
@@ -56,7 +65,7 @@ const Chat = () => {
           {params.room}
         </div>
         <div className={styles.users}>
-          0 users in this room
+          {users} user(s) in this room
         </div>
         <button className={styles.left} onClick={leftRoom}>
           Left the room
@@ -67,7 +76,7 @@ const Chat = () => {
         <Messages messages={state} name={params.name}/>
       </div>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.input}>
           <input 
             type="text" 
